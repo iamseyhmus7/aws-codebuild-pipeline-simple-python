@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CI/CD Pipeline Icin IAM Rolleri (Yaka Kartlari)'
+
+Resources:
+  # 1. ISCININ YAKA KARTI (CodeBuild Role)
+  CodeBuildIsciRolu:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-CodeBuildRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        # İsçiye Kasayı (SSM Parameter Store) Okuma Yetkisi Veriyoruz
+        - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+      Policies:
+        - PolicyName: CodeBuildLogYazmaIzni
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  # 2. SEFIN YAKA KARTI (CodePipeline Role)
+  CodePipelineSefRolu:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AWS::StackName}-CodePipelineRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: SefinIsciyeEmirVermeIzni
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                # Şimdilik tüm projelere emir verebilir (sonra kısıtlayabiliriz)
+                Resource: "*" 
+        - PolicyName: SefinDepoyuKullanmaIzni
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource: "*"
+
+# Oluşturulan yaka kartlarının yaka numaralarını (ARN) dışarı aktarıyoruz ki diğer adımlarda kullanalım.
+Outputs:
+  CodeBuildRoleArn:
+    Value: !GetAtt CodeBuildIsciRolu.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-CodeBuildRoleArn"
+  CodePipelineRoleArn:
+    Value: !GetAtt CodePipelineSefRolu.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-CodePipelineRoleArn"

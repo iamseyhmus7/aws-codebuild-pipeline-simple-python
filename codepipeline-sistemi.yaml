@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Adim 3: Tum Sistemi Baglayan CodePipeline Otomasyonu'
+
+Parameters:
+  RolesStackName:
+    Type: String
+    Default: 'Benim-CICD-Rollerim'
+  BuildStackName:
+    Type: String
+    Default: 'Benim-CICD-Iscim'
+  GithubRepo:
+    Type: String
+    Default: 'aws-codebuild-pipeline-simple-python'
+  GithubBranch:
+    Type: String
+    Default: 'main'
+  FullRepositoryId:
+    Type: String
+    Default: 'iamseyhmus7/aws-codebuild-pipeline-simple-python'
+  # NOT: GitHub baglantisi icin AWS Console'da olusturdugun Connection ARN buraya gelmeli
+  ConnectionArn:
+    Type: String
+    Description: 'AWS CodeStar Connection ARN'
+
+Resources:
+  # 1. GECICI DEPO (S3 Bucket) - Kodlar asamalar arasinda burada tutulur
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "deneme-user-artifact-bucket-${AWS::AccountId}"
+
+  # 2. ANA OTOMASYON BANDI (CodePipeline)
+  AnaPipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: !Sub "${AWS::StackName}-Pipeline"
+      RoleArn: !ImportValue 
+        Fn::Sub: "${RolesStackName}-CodePipelineRoleArn"
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+      Stages:
+        # AŞAMA 1: GitHub'dan Kodlari Cek
+        - Name: Source
+          Actions:
+            - Name: GitHub_Source
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: CodeStarSourceConnection
+                Version: '1'
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                ConnectionArn: !Ref ConnectionArn
+                FullRepositoryId: !Ref FullRepositoryId
+                BranchName: !Ref GithubBranch
+              RunOrder: 1
+
+        # AŞAMA 2: Kodlari Islemeye Gonder (CodeBuild)
+        - Name: Build
+          Actions:
+            - Name: Docker_Build_Action
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: '1'
+              InputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                ProjectName: !ImportValue 
+                  Fn::Sub: "${BuildStackName}-ProjectName"
+              RunOrder: 1
