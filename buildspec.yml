@@ -1,0 +1,24 @@
+version: 0.2
+
+env:
+  parameter-store:
+    # NOT: AWS Systems Manager (SSM) Parameter Store'da daha önceden 
+    # oluşturduğun şifre kasasının isimlerini buraya yazmalısın.
+    DOCKER_USER: "/flask-projesi/dockerhub-token"
+    DOCKER_PASS: "/flask-projesi/dockerhub-username"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Docker Hub'a giris yapiliyor..."
+      - echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+  build:
+    commands:
+      - echo "Docker imaji insa ediliyor..."
+      # DİKKAT: iamseyhmus7 yazan yeri kendi Docker Hub kullanıcı adınla değiştir!
+      - docker build -t iamseyhmus7/benim-cloudformationtemplate-python-app:latest .
+  post_build:
+    commands:
+      - echo "Imaj Docker Hub'a gonderiliyor..."
+      - docker push iamseyhmus7/benim-cloudformationtemplate-python-app:latest
+      - echo "Gorev basariyla tamamlandi Komutanım!"
