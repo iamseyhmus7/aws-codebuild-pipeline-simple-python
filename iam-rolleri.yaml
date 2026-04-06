@@ -28,6 +28,16 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: "*"
+        - PolicyName: IscininS3TepsisiniKullanmaIzni
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:GetObject
+                    - s3:PutObject
+                    - s3:GetObjectVersion
+                  Resource: "*"
 
   # 2. SEFIN YAKA KARTI (CodePipeline Role)
   CodePipelineSefRolu:
@@ -60,7 +70,6 @@ Resources:
                 Action:
                   - s3:*
                 Resource: "*"
-
         - PolicyName: SefinGithubKoprusunuKullanmaIzni
           PolicyDocument:
             Version: '2012-10-17'
