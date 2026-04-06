@@ -61,6 +61,14 @@ Resources:
                   - s3:*
                 Resource: "*"
 
+        - PolicyName: SefinGithubKoprusunuKullanmaIzni
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - codestar-connections:UseConnection
+                Resource: "*"
 # Oluşturulan yaka kartlarının yaka numaralarını (ARN) dışarı aktarıyoruz ki diğer adımlarda kullanalım.
 Outputs:
   CodeBuildRoleArn:
