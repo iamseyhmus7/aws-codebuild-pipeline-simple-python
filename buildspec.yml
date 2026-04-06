@@ -4,8 +4,8 @@ env:
   parameter-store:
     # NOT: AWS Systems Manager (SSM) Parameter Store'da daha önceden 
     # oluşturduğun şifre kasasının isimlerini buraya yazmalısın.
-    DOCKER_USER: "/flask-projesi/dockerhub-token"
-    DOCKER_PASS: "/flask-projesi/dockerhub-username"
+    DOCKER_USER: "/flask-projesi/dockerhub-username"
+    DOCKER_PASS: "/flask-projesi/dockerhub-token"
 
 phases:
   pre_build:
