@@ -28,16 +28,17 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: "*"
+        
         - PolicyName: IscininS3TepsisiniKullanmaIzni
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - s3:GetObject
-                    - s3:PutObject
-                    - s3:GetObjectVersion
-                  Resource: "*"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+                Resource: "*"
 
   # 2. SEFIN YAKA KARTI (CodePipeline Role)
   CodePipelineSefRolu:
@@ -62,6 +63,7 @@ Resources:
                   - codebuild:BatchGetBuilds
                 # Şimdilik tüm projelere emir verebilir (sonra kısıtlayabiliriz)
                 Resource: "*" 
+        
         - PolicyName: SefinDepoyuKullanmaIzni
           PolicyDocument:
             Version: '2012-10-17'
@@ -70,6 +72,7 @@ Resources:
                 Action:
                   - s3:*
                 Resource: "*"
+        
         - PolicyName: SefinGithubKoprusunuKullanmaIzni
           PolicyDocument:
             Version: '2012-10-17'
@@ -78,6 +81,7 @@ Resources:
                 Action:
                   - codestar-connections:UseConnection
                 Resource: "*"
+
 # Oluşturulan yaka kartlarının yaka numaralarını (ARN) dışarı aktarıyoruz ki diğer adımlarda kullanalım.
 Outputs:
   CodeBuildRoleArn:

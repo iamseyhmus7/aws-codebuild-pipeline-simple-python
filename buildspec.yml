@@ -15,10 +15,10 @@ phases:
   build:
     commands:
       - echo "Docker imaji insa ediliyor..."
-      # DİKKAT: iamseyhmus7 yazan yeri kendi Docker Hub kullanıcı adınla değiştir!
-      - docker build -t iamseyhmus7/benim-cloudformationtemplate-python-app:latest .
+      # DİKKAT: seyhmusok yazan yeri kendi Docker Hub kullanıcı adınla değiştir!
+      - docker build -t seyhmusok/benim-cloudformationtemplate-python-app:latest .
   post_build:
     commands:
       - echo "Imaj Docker Hub'a gonderiliyor..."
-      - docker push iamseyhmus7/benim-cloudformationtemplate-python-app:latest
+      - docker push seyhmusok/benim-cloudformationtemplate-python-app:latest
       - echo "Gorev basariyla tamamlandi Komutanım!"
